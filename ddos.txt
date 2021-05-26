@@ -1,0 +1,127 @@
+#!/usr/bin/bash
+clear
+echo " "
+tput setaf 21
+echo "           <--------------------Welcome to Shell Scripting-------------------->  "
+
+ddos()  {
+while :
+do
+	echo " "
+	tput setaf 17
+	echo -e "\t\t\t***************NETWORKING*************** "
+	tput setaf 28
+	echo -e "__________________________________________________________________________________________________"
+	tput setaf 35
+	echo  -e  "\t\t\tPress 1: Server IP Address 
+			\n\t\t\tPress 2: Total No. of Hits 
+			\n\t\t\tPress 3: No. of Clients visited till Date 
+			\n\t\t\tPress 4: No. of Clients vsiited Today
+			\n\t\t\tPress 5: Top most Hitted IP with No. of requests
+			\n\t\t\tPress 6: Show the webpage visited most with No. of requests
+			\n\t\t\tPress 7: Check Suspicious Activity 
+			\n\t\t\tPress 8: Exit"
+	tput setaf 28
+	echo -e "__________________________________________________________________________________________________"
+
+	echo " "
+	tput setaf 5
+	read -p "Enter the only Integer specified above: " n1
+	tput setaf 23
+
+	if [ $n1 -eq 1 ] 
+	then
+		server_ip=$( hostname -I  |  awk '{ print $1 }' )
+		echo -e "\t\t\t Server IP Address:  $server_ip "
+		sleep 4
+		clear
+
+	elif [ $n1 -eq 2 ]
+	then
+		total_hits=$(awk '{ print $1 }'  /var/log/httpd/access_log  |   wc -l)
+		echo -e "\t\t\t Total number of hits:  $total_hits "
+		sleep 4
+		clear
+
+	elif [ $n1 -eq 3 ]
+	then
+		total_clients=$(awk '{ print $1 }'  /var/log/httpd/access_log  |  sort  |  uniq  |  wc -l )
+		echo -e "\t\t\t Total number of clients visited till date:  $total_clients"
+		sleep 4
+		clear
+
+	elif [ $n1 -eq 4 ]
+	then
+		latest_clients=$(grep  $( date  +%e/%b/%G )  /var/log/httpd/access_log  |  awk '{ print $1 }'   |  sort  |  uniq  |  wc -l )
+		echo -e "\t\t\t Total number of clients visited today:  $latest_clients"
+		sleep 4
+		clear
+
+	elif [ $n1 -eq 5 ]
+	then
+		top_hitted_ip=$(cat  /var/log/httpd/access_log  |  awk '{print "requests from the IP: " $1}'  |  uniq -c  |  sort -n -k1 |  tail -1)
+		echo -e "\t\t Output: $top_hitted_ip" 
+		sleep 4
+		clear
+
+	elif [ $n1 -eq 6 ]
+	then
+		most_visited_page=$(awk '{print "requests has come for the webpage: " $7}' /var/log/httpd/access_log | sort | uniq -c | sort -n -k1 | tail -1)
+		echo "$most_visited_page"
+		sleep 4
+		clear
+
+	elif [ $n1 -eq 7 ]
+	then
+		tput setaf 5
+		echo "-------------------------------------------------------"
+		echo   "Do you want to check for DDoS Attack ? " 
+		read  -p  "Type yes/no:  " output
+		echo "-------------------------------------------------------"
+
+		if  [ $output ==  "yes" ]
+		then 
+			grep $(date +%e/%b/%G) /var/log/httpd/access_log   |  awk '{print $1}' | sort | uniq -c | awk '{print $1  " " $2}'  >  file.txt
+			awk '$1  >=  35 {print $2}'  /shell_project/file.txt   >   /shell_project/ip.txt
+			for  i  in  $(cat ip.txt)
+			do
+				echo -e "Suspicious IP:  $i"
+				echo " "
+			done
+		
+			tput setaf  1
+			echo -e "Do you want to block these IP's : "
+			read -p "Type yes/no:  " output_1
+			echo "-------------------------------------------------------"
+				
+			if [ $output_1 == "yes" ]
+			then
+				for   j   in  $(cat ip.txt)
+				do
+					firewall-cmd  --permanent  --add-rich-rule="rule family='ipv4' source address='${j}' reject"
+					firewall-cmd  --reload
+				done
+				echo  "Suspicious IP's blocked Successfully"
+			else
+				echo  "okk"
+			fi
+		else
+			echo "okk"
+		fi
+
+		sleep 4
+		clear
+
+	elif [ $n1 -eq 8 ]
+	then
+		tput setaf 5
+		echo -e "\n\t\t\t<------------------------------------------->"
+		echo -e "\t\t\t\tThankyou for using this Script"
+		echo -e "\t\t\t<------------------------------------------->\n"
+		exit
+	else
+		echo  "Choose the correct option"
+	fi	
+done	
+}
+ddos
