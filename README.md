@@ -13,7 +13,7 @@ A shell script is a computer program designed to be run by the Unix/Linux shell.
 
 ---> Exit the program
 
-## Functionalities of my Menu Based Bash Script (user.sh file)
+## Functionalities of my Menu Based Bash Script (ddos.sh file)
 
 ---> Total No. of Hits to the Server
 
