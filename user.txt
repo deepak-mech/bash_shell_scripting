@@ -1,0 +1,168 @@
+#!/usr/bin/bash
+clear
+echo " "
+tput setaf 21
+echo "           <--------------------Welcome to Shell Scripting-------------------->  "
+
+adduser() {
+echo  " "
+tput setaf 17
+echo "   **********************ADD_USER********************** "
+tput setaf 28
+
+while :
+do
+	read -p " Username: " adduser
+	read -p " Password: " pass
+
+	if [ -z  $adduser ]   &&  [ -z $pass ]
+	then 
+		echo "Your provided username & password is empty"
+	else
+		if id $adduser &> /dev/null
+		then
+			echo "User $adduser already exists..."
+		else
+			if  useradd $adduser  && echo $pass | passwd --stdin $adduser
+			then
+				echo "User $adduser created successfully..."
+				break
+			else
+				echo "User creation failed"
+			fi
+		fi
+	fi
+done
+}
+
+deluser()  {
+echo " "
+tput setaf 17
+echo "   **********************DELETE_USER********************** "
+tput setaf 28
+
+while :
+do
+	read -p "Username: " deluser	
+	if [ -z $deluser ]
+	then
+		echo " No username is not provided"
+	else
+		if id $deluser  &>  /dev/null
+		then 
+			userdel $deluser
+			rm -rf /home/$deluser
+			echo "User deleted successfully..."
+			break
+		else
+			echo "User $deluser doesn't exist"
+		fi
+	fi
+done
+}
+
+lock()  {
+echo " "
+tput setaf 17
+echo "   **********************LOCK_USER********************** "
+tput setaf 28
+
+while :
+do
+	read -p "Enter username to lock & backup: " lockuser
+	if [ -z $lockuser ] 
+	then 
+		echo "Username provided is empty"
+	else
+		if  id $lockuser &> /dev/null
+		then
+			passwd -l $lockuser
+			echo "User locked successfully..."
+
+			homeDir=$(grep  ^${lockuser}:  /etc/passwd  | cut -d  ":"  -f  6)
+ 			if [ -d  $homeDir ]
+			then
+				echo "Home directory $homeDir exists..."
+				tar  -cf  ${lockuser}-`date +%F`.tar  $homeDir &> /dev/null
+				echo "Data backed up successfully..."
+				break
+			else
+				"Home directory $homeDir doesn't exist..."
+			fi
+		else
+			echo  "User $lockuser doesn't exist"
+		fi
+	fi
+done
+}
+
+menu()  {
+
+while :
+do 
+echo " "
+tput setaf 17
+echo "        <--------------------MENU PROGRAM BASED ON BASH SHELL SCRIPTING-------------------->  "
+tput setaf 28
+
+	tput setaf 35
+	echo " "
+	echo  -e  "\t\t\tPress 1: ADD USER \n\t\t\tPress 2: LOCK USER & GET BACKUP of DATA \n\t\t\tPress 3: DELETE USER \n\t\t\tPress 4: EXIT\n"
+	tput setaf 1
+	echo "------------------------------------------------"
+	read -p "Enter only Integer specified above: " n
+	echo "------------------------------------------------"
+	tput setaf 23
+
+	if [ $n -eq 1 ]
+	then
+		adduser
+		sleep 5
+		clear
+
+	elif [ $n -eq 2 ]
+	then
+		lock
+		sleep 5
+		clear
+
+	elif [ $n -eq 3 ]
+	then
+		deluser
+		sleep 5
+		clear
+
+	elif [ $n -eq 4 ]
+	then
+		tput setaf 5
+		echo -e "\n\t\t\t<------------------------------------------->"
+		echo -e "\t\t\t\tThankyou for using this Script"
+		echo -e "\t\t\t<------------------------------------------->\n"
+		exit
+
+	elif [ -z  $n ]
+	then
+		echo "Press any option plz..."
+		sleep 5
+		clear			
+
+	else
+		echo "Press the valid option..."
+		sleep 5
+		clear
+	
+	fi
+
+done
+exit 0
+}
+
+menu
+			
+		
+
+
+
+			
+
+	
