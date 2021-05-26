@@ -1,9 +1,9 @@
 # bash_shell_scripting
 
-<h2>What is Bash Shell Scripting ?<h2>
+## What is Bash Shell Scripting ?
 A shell script is a computer program designed to be run by the Unix/Linux shell. Bash scripts can be used for various purposes, such as executing a shell command, running multiple commands together, customizing administrative tasks, performing task automation etc. So knowledge of bash programming basics is important for every Linux user.
   
-<h2>Functionalities of my Menu Based Bash Script<h2>
+## Functionalities of my Menu Based Bash Script
 
 ---> Create User Name & Password
 
